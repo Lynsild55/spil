@@ -24,6 +24,7 @@ public class GUI extends Application {
 	public static Image hero_right,hero_left,hero_up,hero_down;
 
 	public static Player me;
+
 	public static List<Player> players = new ArrayList<Player>();
 
 	private Label[][] fields;

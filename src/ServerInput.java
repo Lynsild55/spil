@@ -1,0 +1,2 @@
+public class ServerInput {
+}
