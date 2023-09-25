@@ -196,6 +196,8 @@ public class GUI extends Application {
 		return null;
 	}
 
-	
-}
+	public void connection(){
 
+	}
+
+}
