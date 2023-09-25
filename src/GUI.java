@@ -1,5 +1,6 @@
 
 
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -196,8 +197,12 @@ public class GUI extends Application {
 		return null;
 	}
 
-	public void connection(){
-
+	public void connection() throws Exception{
+		Socket clientSocket = new Socket("localhost", 6789);
+		Output output = new Output(clientSocket);
+		output.start();
+		Input input = new Input(clientSocket);
+		input.start();
 	}
 
 }

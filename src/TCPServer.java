@@ -8,8 +8,8 @@ public class TCPServer {
 
         Input i = new Input(connectionSocket);
         i.start();
-        Output o = new Output(connectionSocket);
-        o.start();
+        //Output o = new Output(connectionSocket);
+        //o.start();
 
     }
 }
