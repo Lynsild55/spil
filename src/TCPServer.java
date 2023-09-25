@@ -6,9 +6,9 @@ public class TCPServer {
         ServerSocket welcomSocket = new ServerSocket(6789);
         Socket connectionSocket = welcomSocket.accept();
 
-        Input i = new Input();
+        Input i = new Input(connectionSocket);
         i.start();
-        Output o = new Output();
+        Output o = new Output(connectionSocket);
         o.start();
 
     }
