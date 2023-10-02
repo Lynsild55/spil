@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -39,6 +41,8 @@ public class GUI extends Application {
 	private Socket clientSocket;
 	private DataOutputStream outToServer;
 	private BufferedReader inFromServer;
+
+	private Semaphore semaphore = new Semaphore(1);
 
 	private  String[] board = {    // 20x20
 			"wwwwwwwwwwwwwwwwwwww",
@@ -151,6 +155,8 @@ public class GUI extends Application {
 						while (true) {
 							String[] tekst = input.readLine().split(" ");
 							moveFromServer(tekst[0], tekst[1]);
+							System.out.println(Arrays.toString(tekst));
+							semaphore.release();
 						}
 					} catch (IOException e) {
 						throw new RuntimeException(e);
@@ -239,8 +245,9 @@ public class GUI extends Application {
 
 	public void sendBesked(String dir) {
 		try {
+			semaphore.acquire();
 			outToServer.writeBytes(dir + " " + me.name + '\n');
-		} catch (IOException e) {
+		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
 		}
 	}
