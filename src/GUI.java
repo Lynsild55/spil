@@ -171,6 +171,10 @@ public class GUI extends Application {
 			players.add(harry);
 			fields[14][15].setGraphic(new ImageView(hero_up));
 
+			Player Silas = new Player("Silas",3,14, "up");
+			players.add(Silas);
+			fields[3][14].setGraphic(new ImageView(hero_up));
+
 			scoreList.setText(getScoreList());
 		} catch(Exception e) {
 			e.printStackTrace();
