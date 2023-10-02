@@ -1,5 +1,9 @@
 
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +34,11 @@ public class GUI extends Application {
 
 	private Label[][] fields;
 	private TextArea scoreList;
-	
+
+	private Socket clientSocket;
+	private DataOutputStream outToServer;
+	private BufferedReader inFromServer;
+
 	private  String[] board = {    // 20x20
 			"wwwwwwwwwwwwwwwwwwww",
 			"w        ww        w",
@@ -115,9 +123,21 @@ public class GUI extends Application {
 			primaryStage.setScene(scene);
 			primaryStage.show();
 
+			clientSocket = new Socket("localhost",6789);
+			outToServer = new DataOutputStream(clientSocket.getOutputStream());
+			inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+
 			scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
 				switch (event.getCode()) {
-				case UP:    playerMoved(0,-1,"up");    break;
+				case UP:    playerMoved(0,-1,"up");
+					try {
+						outToServer.writeBytes("UP");
+						String modifiedSentence = inFromServer.readLine();
+						System.out.println("FROM SERVER: " + modifiedSentence);
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					}
+					break;
 				case DOWN:  playerMoved(0,+1,"down");  break;
 				case LEFT:  playerMoved(-1,0,"left");  break;
 				case RIGHT: playerMoved(+1,0,"right"); break;
