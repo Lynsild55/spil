@@ -149,7 +149,7 @@ public class GUI extends Application {
 						BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 						while (true) {
 							String tekst = input.readLine();
-
+							System.out.println(tekst);
 						}
 					} catch (IOException e) {
 						throw new RuntimeException(e);
