@@ -9,12 +9,12 @@ public class TCPServer {
         ServerSocket welcomSocket = new ServerSocket(6789);
         Socket connectionSocket = welcomSocket.accept();
 
+        BufferedReader input = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
         while (true) {
-            BufferedReader input = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
             String tekst = input.readLine();
             System.out.println(tekst);
             DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
-            outToClient.writeBytes("Ekko: " + tekst);
+            outToClient.writeBytes("Ekko: " + tekst + '\n');
         }
 
         //Input i = new Input(connectionSocket);

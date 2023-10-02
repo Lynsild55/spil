@@ -131,7 +131,7 @@ public class GUI extends Application {
 				switch (event.getCode()) {
 				case UP:    playerMoved(0,-1,"up");
 					try {
-						outToServer.writeBytes("UP");
+						outToServer.writeBytes("UP" + '\n');
 						String modifiedSentence = inFromServer.readLine();
 						System.out.println("FROM SERVER: " + modifiedSentence);
 					} catch (IOException e) {
