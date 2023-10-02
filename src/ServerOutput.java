@@ -7,12 +7,10 @@ import java.util.ArrayList;
 
 public class ServerOutput extends Thread {
 
-    private ArrayList<Socket> players = new ArrayList<>();
+    private Socket socket;
 
-    public void addPlayer(Socket socket) {
-        if (!players.contains(socket)) {
-            players.add(socket);
-        }
+    public ServerOutput(Socket socket) {
+        this.socket = socket;
     }
 
     @Override
@@ -20,11 +18,10 @@ public class ServerOutput extends Thread {
         try {
             while (true) {
                 BufferedReader serverSentence = new BufferedReader(new InputStreamReader(System.in));
-                for (Socket s: players) {
-                    DataOutputStream outToClient = new DataOutputStream(s.getOutputStream());
-                    String sentence = serverSentence.readLine() + '\n';
-                    outToClient.writeBytes(sentence);
-                }
+                DataOutputStream outToClient = new DataOutputStream(socket.getOutputStream());
+                String sentence = serverSentence.readLine() + '\n';
+                outToClient.writeBytes(sentence);
+
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
