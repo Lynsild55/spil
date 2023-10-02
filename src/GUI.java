@@ -148,8 +148,8 @@ public class GUI extends Application {
 					try {
 						BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 						while (true) {
-							String tekst = input.readLine();
-							System.out.println(tekst);
+							String[] tekst = input.readLine().split(" ");
+							moveFromServer(tekst[0], tekst[1]);
 						}
 					} catch (IOException e) {
 						throw new RuntimeException(e);
@@ -237,6 +237,22 @@ public class GUI extends Application {
 			outToServer.writeBytes(dir + " " + me.name + '\n');
 		} catch (IOException e) {
 			throw new RuntimeException(e);
+		}
+	}
+
+	public void moveFromServer(String dir, String navn) {
+		Player p = me;
+		for (Player player : players) {
+			if (player.name.equals(navn)) {
+				p = player;
+			}
+		}
+		switch (dir) {
+			case "UP": playerMoved(0,-1, dir, p); break;
+			case "DOWN": playerMoved(0,+1,dir,p); break;
+			case "LEFT": playerMoved(-1,0,dir,p); break;
+			case "RIGHT": playerMoved(+1,0,dir,p); break;
+			default: break;
 		}
 	}
 
