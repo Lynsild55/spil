@@ -129,21 +129,36 @@ public class GUI extends Application {
 
 			scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
 				switch (event.getCode()) {
-				case UP:    playerMoved(0,-1,"up");
-					try {
-						outToServer.writeBytes("UP" + '\n');
-						String modifiedSentence = inFromServer.readLine();
-						System.out.println("FROM SERVER: " + modifiedSentence);
-					} catch (IOException e) {
-						throw new RuntimeException(e);
-					}
-					break;
-				case DOWN:  playerMoved(0,+1,"down");  break;
-				case LEFT:  playerMoved(-1,0,"left");  break;
-				case RIGHT: playerMoved(+1,0,"right"); break;
+				case UP: sendBesked("UP"); break;
+				case DOWN:  sendBesked("DOWN");  break;
+				case LEFT:  sendBesked("LEFT");  break;
+				case RIGHT: sendBesked("RIGHT"); break;
 				default: break;
 				}
 			});
+
+			class Listener extends Thread {
+				private Socket socket;
+
+				public Listener(Socket socket) {
+					this.socket = socket;
+				}
+				@Override
+				public void run() {
+					try {
+						BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+						while (true) {
+							String tekst = input.readLine();
+
+						}
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					}
+				}
+			}
+
+			Listener listener = new Listener(clientSocket);
+			listener.start();
 			
             // Setting up standard players
 			
@@ -161,20 +176,20 @@ public class GUI extends Application {
 		}
 	}
 
-	public void playerMoved(int delta_x, int delta_y, String direction) {
-		me.direction = direction;
-		int x = me.getXpos(),y = me.getYpos();
+	public void playerMoved(int delta_x, int delta_y, String direction, Player player) {
+		player.direction = direction;
+		int x = player.getXpos(),y = player.getYpos();
 
 		if (board[y+delta_y].charAt(x+delta_x)=='w') {
-			me.addPoints(-1);
+			player.addPoints(-1);
 		} 
 		else {
 			Player p = getPlayerAt(x+delta_x,y+delta_y);
 			if (p!=null) {
-              me.addPoints(10);
+              player.addPoints(10);
               p.addPoints(-10);
 			} else {
-				me.addPoints(1);
+				player.addPoints(1);
 			
 				fields[x][y].setGraphic(new ImageView(image_floor));
 				x+=delta_x;
@@ -193,8 +208,8 @@ public class GUI extends Application {
 					fields[x][y].setGraphic(new ImageView(hero_down));
 				};
 
-				me.setXpos(x);
-				me.setYpos(y);
+				player.setXpos(x);
+				player.setYpos(y);
 			}
 		}
 		scoreList.setText(getScoreList());
@@ -217,9 +232,12 @@ public class GUI extends Application {
 		return null;
 	}
 
-	public void connection() throws Exception{
-		Socket clientSocket = new Socket("localhost", 6789);
-
+	public void sendBesked(String dir) {
+		try {
+			outToServer.writeBytes(dir + " " + me.name + '\n');
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }
