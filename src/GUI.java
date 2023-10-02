@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -240,20 +241,26 @@ public class GUI extends Application {
 		}
 	}
 
+
 	public void moveFromServer(String dir, String navn) {
-		Player p = me;
-		for (Player player : players) {
-			if (player.name.equals(navn)) {
-				p = player;
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				Player p = me;
+				for (Player player : players) {
+					if (player.name.equals(navn)) {
+						p = player;
+					}
+				}
+				switch (dir) {
+					case "UP": playerMoved(0,-1, dir.toLowerCase(), p); break;
+					case "DOWN": playerMoved(0,+1,dir.toLowerCase(),p); break;
+					case "LEFT": playerMoved(-1,0,dir.toLowerCase(),p); break;
+					case "RIGHT": playerMoved(+1,0,dir.toLowerCase(),p); break;
+					default: break;
+				}
 			}
-		}
-		switch (dir) {
-			case "UP": playerMoved(0,-1, dir, p); break;
-			case "DOWN": playerMoved(0,+1,dir,p); break;
-			case "LEFT": playerMoved(-1,0,dir,p); break;
-			case "RIGHT": playerMoved(+1,0,dir,p); break;
-			default: break;
-		}
+		});
 	}
 
 }
