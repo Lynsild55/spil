@@ -25,6 +25,7 @@ public class ServerThread extends Thread {
             BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
             while (true) {
                 String move = inFromClient.readLine();
+                System.out.println(move);
                 server.sendMessage(move);
             }
         } catch (IOException e) {

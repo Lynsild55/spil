@@ -175,7 +175,7 @@ public class GUI extends Application {
 			me = new Player("Orville",9,4,"up");
 			players.add(me);
 			fields[9][4].setGraphic(new ImageView(hero_up));
-			 */
+
 
 			Player harry = new Player("Harry",14,15,"up");
 			players.add(harry);
@@ -184,6 +184,7 @@ public class GUI extends Application {
 			Player Silas = new Player("Silas",3,14, "up");
 			players.add(Silas);
 			fields[3][14].setGraphic(new ImageView(hero_up));
+			*/
 
 			scoreList.setText(getScoreList());
 		} catch(Exception e) {
@@ -251,15 +252,20 @@ public class GUI extends Application {
 	}
 
 	private void okAction(String name, Stage stage) throws IOException {
-		String[] pos = randomPosition().split(" ");
-		outToServer.writeBytes(name + pos[0] + pos[1] + "\n");
+		String pos = randomPosition();
+		outToServer.writeBytes(name + " " + pos + "\n");
 		stage.hide();
 	}
 
 	private void addSpiller(String name, String x, String y) {
 		me = new Player(name, Integer.parseInt(x),Integer.parseInt(y),"up");
 		players.add(me);
-		fields[Integer.parseInt(x)][Integer.parseInt(y)].setGraphic(new ImageView(hero_up));
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				fields[Integer.parseInt(x)][Integer.parseInt(y)].setGraphic(new ImageView(hero_up));
+			}
+		});
 	}
 
 	public String getScoreList() {
