@@ -279,6 +279,15 @@ public class GUI extends Application {
 		}
 	}
 
+	public String randomPosition() {
+		int x = (int) (Math.random()*18) + 1;
+		int y = (int) (Math.random()*18) + 1;
+		if (board[y].charAt(x) == 'w') {
+			return randomPosition();
+		} else {
+			return x + " " + y;
+		}
+	}
 
 	public void moveFromServer(String dir, String navn) {
 		Platform.runLater(new Runnable() {
