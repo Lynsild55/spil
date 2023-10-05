@@ -43,6 +43,7 @@ public class GUI extends Application {
 	private Socket clientSocket;
 	private DataOutputStream outToServer;
 	private BufferedReader inFromServer;
+	private TextField nameField;
 	private  String[] board = {    // 20x20
 			"wwwwwwwwwwwwwwwwwwww",
 			"w        ww        w",
@@ -234,7 +235,7 @@ public class GUI extends Application {
 	public void indtastNavn(){
 		Stage newStage = new Stage();
 		VBox comp = new VBox();
-		TextField nameField = new TextField("Indtast navn");
+		nameField = new TextField("Indtast navn");
 		Button button = new Button("Ok");
 		comp.getChildren().add(nameField);
 		comp.getChildren().add(button);
@@ -258,7 +259,7 @@ public class GUI extends Application {
 	}
 
 	private void addSpiller(String name, String x, String y) {
-		if	(me != null) {
+		if	(nameField.getText().equals(name)) {
 			me = new Player(name, Integer.parseInt(x), Integer.parseInt(y), "up");
 			players.add(me);
 			Platform.runLater(new Runnable() {
@@ -268,8 +269,7 @@ public class GUI extends Application {
 				}
 			});
 		} else {
-			Player Silas = new Player(name,Integer.parseInt(x),Integer.parseInt(y), "up");
-			players.add(Silas);
+			players.add(new Player(name,Integer.parseInt(x),Integer.parseInt(y), "up"));
 			Platform.runLater(new Runnable() {
 				@Override
 				public void run() {
