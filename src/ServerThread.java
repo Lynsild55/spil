@@ -11,10 +11,12 @@ public class ServerThread extends Thread {
     private Socket connectionSocket;
     private ArrayList<Socket> connections;
     private LinkedList<String> queue = new LinkedList<>();
+    private TCPServer server;
 
-    public ServerThread(Socket connectionSocket, ArrayList<Socket> connections) {
+    public ServerThread(Socket connectionSocket, ArrayList<Socket> connections, TCPServer server) {
         this.connectionSocket = connectionSocket;
         this.connections = connections;
+        this.server = server;
     }
 
     @Override
@@ -23,13 +25,7 @@ public class ServerThread extends Thread {
             BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
             while (true) {
                 String move = inFromClient.readLine();
-
-                    for (Socket socket : connections) {
-                        DataOutputStream outToClient = new DataOutputStream(socket.getOutputStream());
-                        System.out.println(move);
-                        outToClient.writeBytes(move + "\n");
-                    }
-
+                server.sendMessage(move);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

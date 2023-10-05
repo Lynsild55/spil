@@ -13,6 +13,7 @@ import java.util.concurrent.Semaphore;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -154,8 +155,8 @@ public class GUI extends Application {
 						BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 						while (true) {
 							String[] tekst = input.readLine().split(" ");
-							moveFromServer(tekst[0], tekst[1]);
 							System.out.println(Arrays.toString(tekst));
+							moveFromServer(tekst[0], tekst[1]);
 							semaphore.release();
 						}
 					} catch (IOException e) {
@@ -168,6 +169,16 @@ public class GUI extends Application {
 			listener.start();
 			
             // Setting up standard players
+			Popup popup = new Popup();
+			popup.setWidth(100);
+			popup.setHeight(100);
+
+			TextField textField = new TextField("Indtast navn");
+			popup.getContent().add(textField);
+			Button button = new Button("Ok");
+			popup.getContent().add(button);
+
+			popup.show(primaryStage);
 			
 			me = new Player("Orville",9,4,"up");
 			players.add(me);

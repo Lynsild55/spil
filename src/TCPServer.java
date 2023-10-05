@@ -1,24 +1,33 @@
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Connection;
 import java.util.ArrayList;
 
 public class TCPServer {
+        private ArrayList<Socket> connections = new ArrayList<>();
+
+    public TCPServer() {
+    }
+
     public static void main(String[] args) throws Exception {
+        TCPServer tcpServer = new TCPServer();
         ServerSocket welcomeSocket = new ServerSocket(6789);
-        ArrayList<Socket> connections = new ArrayList<>();
         while (true) {
             Socket connectionSocket = welcomeSocket.accept();
-            connections.add(connectionSocket);
-            (new ServerThread(connectionSocket, connections)).start();
+            tcpServer.connections.add(connectionSocket);
+            (new ServerThread(connectionSocket, tcpServer.connections, tcpServer)).start();
         }
 
-        //Input i = new Input(connectionSocket);
-        //i.start();
-        //Output o = new Output(connectionSocket);
-        //o.start();
+    }
 
+    public synchronized void sendMessage(String msg) throws IOException {
+        for (Socket socket : connections) {
+            DataOutputStream outToClient = new DataOutputStream(socket.getOutputStream());
+            outToClient.writeBytes(msg + "\n");
+        }
     }
 }
