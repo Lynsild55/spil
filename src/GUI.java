@@ -149,7 +149,7 @@ public class GUI extends Application {
 					this.socket = socket;
 				}
 				@Override
-				public synchronized void run() {
+				public void run() {
 					try {
 						BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 						while (true) {
@@ -193,7 +193,7 @@ public class GUI extends Application {
 		}
 	}
 
-	public synchronized void playerMoved(int delta_x, int delta_y, String direction, Player player) {
+	public void playerMoved(int delta_x, int delta_y, String direction, Player player) {
 		player.direction = direction;
 		int x = player.getXpos(),y = player.getYpos();
 
