@@ -43,9 +43,6 @@ public class GUI extends Application {
 	private Socket clientSocket;
 	private DataOutputStream outToServer;
 	private BufferedReader inFromServer;
-
-	private Semaphore semaphore = new Semaphore(1);
-
 	private  String[] board = {    // 20x20
 			"wwwwwwwwwwwwwwwwwwww",
 			"w        ww        w",
@@ -157,8 +154,11 @@ public class GUI extends Application {
 						while (true) {
 							String[] tekst = input.readLine().split(" ");
 							System.out.println(Arrays.toString(tekst));
-							moveFromServer(tekst[0], tekst[1]);
-							semaphore.release();
+							if (tekst.length > 2) {
+								addSpiller(tekst[0], tekst[1], tekst[2]);
+							} else {
+								moveFromServer(tekst[0], tekst[1]);
+							}
 						}
 					} catch (IOException e) {
 						throw new RuntimeException(e);
@@ -171,10 +171,11 @@ public class GUI extends Application {
 			
             // Setting up standard players
 			indtastNavn();
-			
+			/**
 			me = new Player("Orville",9,4,"up");
 			players.add(me);
 			fields[9][4].setGraphic(new ImageView(hero_up));
+			 */
 
 			Player harry = new Player("Harry",14,15,"up");
 			players.add(harry);
@@ -236,21 +237,29 @@ public class GUI extends Application {
 		Button button = new Button("Ok");
 		comp.getChildren().add(nameField);
 		comp.getChildren().add(button);
-		button.setOnAction(event -> okAction(nameField.getText()));
+		button.setOnAction(event -> {
+			try {
+				okAction(nameField.getText(), newStage);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		});
 
 		Scene stageScene = new Scene(comp, 200, 75);
 		newStage.setScene(stageScene);
 		newStage.show();
 	}
 
-	private void okAction(String name) {
-		addSpiller(name);
+	private void okAction(String name, Stage stage) throws IOException {
+		String[] pos = randomPosition().split(" ");
+		outToServer.writeBytes(name + pos[0] + pos[1] + "\n");
+		stage.hide();
 	}
 
-	private void addSpiller(String name) {
-		me = new Player(name,9,4,"up");
+	private void addSpiller(String name, String x, String y) {
+		me = new Player(name, Integer.parseInt(x),Integer.parseInt(y),"up");
 		players.add(me);
-		fields[9][4].setGraphic(new ImageView(hero_up));
+		fields[Integer.parseInt(x)][Integer.parseInt(y)].setGraphic(new ImageView(hero_up));
 	}
 
 	public String getScoreList() {
@@ -272,9 +281,8 @@ public class GUI extends Application {
 
 	public void sendBesked(String dir) {
 		try {
-			semaphore.acquire();
 			outToServer.writeBytes(dir + " " + me.name + '\n');
-		} catch (IOException | InterruptedException e) {
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
