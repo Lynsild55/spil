@@ -13,6 +13,7 @@ import java.util.concurrent.Semaphore;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.scene.layout.VBox;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -169,16 +170,7 @@ public class GUI extends Application {
 			listener.start();
 			
             // Setting up standard players
-			Popup popup = new Popup();
-			popup.setWidth(100);
-			popup.setHeight(100);
-
-			TextField textField = new TextField("Indtast navn");
-			popup.getContent().add(textField);
-			Button button = new Button("Ok");
-			popup.getContent().add(button);
-
-			popup.show(primaryStage);
+			indtastNavn();
 			
 			me = new Player("Orville",9,4,"up");
 			players.add(me);
@@ -235,6 +227,30 @@ public class GUI extends Application {
 			}
 		}
 		scoreList.setText(getScoreList());
+	}
+
+	public void indtastNavn(){
+		Stage newStage = new Stage();
+		VBox comp = new VBox();
+		TextField nameField = new TextField("Indtast navn");
+		Button button = new Button("Ok");
+		comp.getChildren().add(nameField);
+		comp.getChildren().add(button);
+		button.setOnAction(event -> okAction(nameField.getText()));
+
+		Scene stageScene = new Scene(comp, 200, 75);
+		newStage.setScene(stageScene);
+		newStage.show();
+	}
+
+	private void okAction(String name) {
+		addSpiller(name);
+	}
+
+	private void addSpiller(String name) {
+		me = new Player(name,9,4,"up");
+		players.add(me);
+		fields[9][4].setGraphic(new ImageView(hero_up));
 	}
 
 	public String getScoreList() {
