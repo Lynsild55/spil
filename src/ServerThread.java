@@ -18,20 +18,17 @@ public class ServerThread extends Thread {
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
         try {
             BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
             while (true) {
                 String move = inFromClient.readLine();
-                queue.add(move);
-                for (int i = 0; i < queue.size(); i++) {
+
                     for (Socket socket : connections) {
                         DataOutputStream outToClient = new DataOutputStream(socket.getOutputStream());
-                        System.out.println(queue.getFirst());
-                        outToClient.writeBytes(queue.getFirst() + "\n");
+                        System.out.println(move);
+                        outToClient.writeBytes(move + "\n");
                     }
-                    queue.remove(move);
-                }
 
             }
         } catch (IOException e) {
