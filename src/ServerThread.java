@@ -24,13 +24,14 @@ public class ServerThread extends Thread {
             while (true) {
                 String move = inFromClient.readLine();
                 queue.add(move);
-
+                for (int i = 0; i < queue.size(); i++) {
                     for (Socket socket : connections) {
                         DataOutputStream outToClient = new DataOutputStream(socket.getOutputStream());
-                        System.out.println(move);
+                        System.out.println(queue.getFirst());
                         outToClient.writeBytes(queue.getFirst() + "\n");
                     }
                     queue.remove(move);
+                }
 
             }
         } catch (IOException e) {
