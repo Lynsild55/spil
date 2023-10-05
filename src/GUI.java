@@ -235,8 +235,10 @@ public class GUI extends Application {
 	public void indtastNavn(){
 		Stage newStage = new Stage();
 		VBox comp = new VBox();
+		Label label = new Label("Vent med at trykke ok til alle spillere er connected");
 		nameField = new TextField("Indtast navn");
 		Button button = new Button("Ok");
+		comp.getChildren().add(label);
 		comp.getChildren().add(nameField);
 		comp.getChildren().add(button);
 		button.setOnAction(event -> {
