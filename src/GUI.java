@@ -258,14 +258,25 @@ public class GUI extends Application {
 	}
 
 	private void addSpiller(String name, String x, String y) {
-		me = new Player(name, Integer.parseInt(x),Integer.parseInt(y),"up");
-		players.add(me);
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				fields[Integer.parseInt(x)][Integer.parseInt(y)].setGraphic(new ImageView(hero_up));
-			}
-		});
+		if	(me != null) {
+			me = new Player(name, Integer.parseInt(x), Integer.parseInt(y), "up");
+			players.add(me);
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					fields[Integer.parseInt(x)][Integer.parseInt(y)].setGraphic(new ImageView(hero_up));
+				}
+			});
+		} else {
+			Player Silas = new Player(name,Integer.parseInt(x),Integer.parseInt(y), "up");
+			players.add(Silas);
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					fields[Integer.parseInt(x)][Integer.parseInt(y)].setGraphic(new ImageView(hero_up));
+				}
+			});
+		}
 	}
 
 	public String getScoreList() {
