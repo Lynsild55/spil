@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -155,11 +157,7 @@ public class GUI extends Application {
 				case LEFT:  sendBesked("LEFT");  break;
 				case RIGHT: sendBesked("RIGHT"); break;
 				case SPACE:
-					try {
-						shoot(me);
-					} catch (InterruptedException e) {
-						throw new RuntimeException(e);
-					}
+					sendSkud();
 					break;
 				default: break;
 				}
@@ -180,11 +178,13 @@ public class GUI extends Application {
 							System.out.println(Arrays.toString(tekst));
 							if (tekst.length > 2) {
 								addSpiller(tekst[0], tekst[1], tekst[2]);
-							} else {
+							} else if (tekst.length > 1){
 								moveFromServer(tekst[0], tekst[1]);
+							} else {
+								shootFromServer(tekst[0]);
 							}
 						}
-					} catch (IOException e) {
+					} catch (IOException | InterruptedException e) {
 						throw new RuntimeException(e);
 					}
 				}
@@ -237,6 +237,17 @@ public class GUI extends Application {
 					fields[x][y-i].setGraphic(new ImageView(fireVertical));
 				} else {
 					fields[x][y-i].setGraphic(new ImageView(fireWallNorth));
+					ExecutorService executor = Executors.newSingleThreadExecutor();
+					executor.submit(() -> {
+						try {
+							Thread.sleep(1000); // Sleep for 1 second (1000 milliseconds)
+						} catch (InterruptedException e) {
+							e.printStackTrace(); // Handle the exception as needed
+						}
+
+						// Call a method to remove the floor image
+						remove(x, y-1, direction);
+					});
 				}
 
 				i++;
@@ -259,13 +270,17 @@ public class GUI extends Application {
 					fields[x][y + i].setGraphic(new ImageView(fireVertical));
 				} else {
 					fields[x][y + i].setGraphic(new ImageView(fireWallSouth));
-					for (int j = 0; j < 100000; j++) {
-						System.out.println("p");
-						if (j == 99999) {
-							System.out.println("here");
-							remove(board[y+1].charAt(x),x,y,1);
+					ExecutorService executor = Executors.newSingleThreadExecutor();
+					executor.submit(() -> {
+						try {
+							Thread.sleep(1000); // Sleep for 1 second (1000 milliseconds)
+						} catch (InterruptedException e) {
+							e.printStackTrace(); // Handle the exception as needed
 						}
-					}
+
+						// Call a method to remove the floor image
+						remove(x, y+1, direction);
+					});
 				}
 
 				i++;
@@ -289,6 +304,17 @@ public class GUI extends Application {
 					fields[x + i][y].setGraphic(new ImageView(fireHorizontal));
 				} else {
 					fields[x + i][y].setGraphic(new ImageView(fireWallEast));
+					ExecutorService executor = Executors.newSingleThreadExecutor();
+					executor.submit(() -> {
+						try {
+							Thread.sleep(1000); // Sleep for 1 second (1000 milliseconds)
+						} catch (InterruptedException e) {
+							e.printStackTrace(); // Handle the exception as needed
+						}
+
+						// Call a method to remove the floor image
+						remove( x+1, y, direction);
+					});
 				}
 
 				i++;
@@ -311,20 +337,47 @@ public class GUI extends Application {
 					fields[x - i][y].setGraphic(new ImageView(fireHorizontal));
 				} else {
 					fields[x - i][y].setGraphic(new ImageView(fireWallWest));
-				}
+					ExecutorService executor = Executors.newSingleThreadExecutor();
+					executor.submit(() -> {
+						try {
+							Thread.sleep(1000); // Sleep for 1 second (1000 milliseconds)
+						} catch (InterruptedException e) {
+							e.printStackTrace(); // Handle the exception as needed
+						}
 
+						// Call a method to remove the floor image
+						remove(x-1, y, direction);
+					});
+				}
 				i++;
 				boardCord = board[y].charAt(x - i);
 			}
 		}
 	}
 
-	public void remove(char boardCord, int x, int y, int i) {
-		while (boardCord != 'w') {
-			fields[x][y + i].setGraphic(new ImageView(image_floor));
-			i++;
-			boardCord = board[y + i].charAt(x);
-		}
+	public void remove(int x, int y, String direction) {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				int xPos_r = x;
+				int yPos_r = y;
+				while (board[yPos_r].charAt(xPos_r) != 'w') {
+					fields[xPos_r][yPos_r].setGraphic(new ImageView(image_floor));
+					if (direction.equals("up")) {
+						yPos_r--;
+
+					} else if (direction.equals("down")) {
+						yPos_r++;
+
+					} else if (direction.equals("right")) {
+						xPos_r++;
+
+					} else if (direction.equals("left")) {
+						xPos_r--;
+					}
+				}
+			}
+		});
 	}
 
 	public void die(Player player) {
@@ -455,6 +508,14 @@ public class GUI extends Application {
 		}
 	}
 
+	public void sendSkud() {
+		try {
+			outToServer.writeBytes(me.name + '\n');
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	public String randomPosition() {
 		int x = (int) (Math.random()*18) + 1;
 		int y = (int) (Math.random()*18) + 1;
@@ -481,6 +542,25 @@ public class GUI extends Application {
 					case "LEFT": playerMoved(-1,0,dir.toLowerCase(),p); break;
 					case "RIGHT": playerMoved(+1,0,dir.toLowerCase(),p); break;
 					default: break;
+				}
+			}
+		});
+	}
+
+	public void shootFromServer(String navn) throws InterruptedException {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				Player p = me;
+				for (Player player : players) {
+					if (player.name.equals(navn)) {
+						p = player;
+					}
+				}
+				try {
+					shoot(p);
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
 				}
 			}
 		});
