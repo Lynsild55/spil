@@ -8,7 +8,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Timer;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -54,7 +56,7 @@ public class GUI extends Application {
 			"w  w               w",
 			"w w w w w w w  w  ww",
 			"w w     www w  w  ww",
-			"w w     w w w  w  ww",
+			"w w     www w  w  ww",
 			"w   w w  w  w  w   w",
 			"w     w  w  w  w   w",
 			"w ww ww        w  ww",
@@ -105,7 +107,8 @@ public class GUI extends Application {
 
 			fireDown = new Image(getClass().getResourceAsStream("Image/fireDown.png"), size, size, false, false);
 			fireHorizontal = new Image(getClass().getResourceAsStream("Image/fireHorizontal.png"), size, size, false, false);
-			fireLeft = new Image(getClass().getResourceAsStream("Image/fireRight.png"), size, size, false, false);
+			fireLeft = new Image(getClass().getResourceAsStream("Image/fireLeft.png"), size, size, false, false);
+			fireRight = new Image(getClass().getResourceAsStream("Image/fireRight.png"), size, size, false, false);
 			fireUp = new Image(getClass().getResourceAsStream("Image/fireUp.png"), size, size, false, false);
 			fireVertical = new Image(getClass().getResourceAsStream("Image/fireVertical.png"), size, size, false, false);
 			fireWallEast = new Image(getClass().getResourceAsStream("Image/fireWallEast.png"), size, size, false, false);
@@ -151,7 +154,13 @@ public class GUI extends Application {
 				case DOWN:  sendBesked("DOWN");  break;
 				case LEFT:  sendBesked("LEFT");  break;
 				case RIGHT: sendBesked("RIGHT"); break;
-				case SPACE: shoot(me); break;
+				case SPACE:
+					try {
+						shoot(me);
+					} catch (InterruptedException e) {
+						throw new RuntimeException(e);
+					}
+					break;
 				default: break;
 				}
 			});
@@ -207,7 +216,7 @@ public class GUI extends Application {
 		}
 	}
 
-	public void shoot(Player player) {
+	public void shoot(Player player) throws InterruptedException {
 		int x = player.getXpos(),y = player.getYpos();
 		String direction = player.direction;
 
@@ -233,6 +242,88 @@ public class GUI extends Application {
 				i++;
 				boardCord = board[y-i].charAt(x);
 			}
+		} else if (direction.equals("down")) {
+			char boardCord = board[y+1].charAt(x);
+			int i = 1;
+			while (boardCord != 'w') {
+				char nextBoardCord = board[y + i + 1].charAt(x);
+				Player p = getPlayerAt(x, y + i);
+
+				if (p != null) {
+					die(p);
+				}
+
+				if (i == 1) {
+					fields[x][y + i].setGraphic(new ImageView(fireDown));
+				} else if (nextBoardCord != 'w') {
+					fields[x][y + i].setGraphic(new ImageView(fireVertical));
+				} else {
+					fields[x][y + i].setGraphic(new ImageView(fireWallSouth));
+					for (int j = 0; j < 100000; j++) {
+						System.out.println("p");
+						if (j == 99999) {
+							System.out.println("here");
+							remove(board[y+1].charAt(x),x,y,1);
+						}
+					}
+				}
+
+				i++;
+				boardCord = board[y + i].charAt(x);
+			}
+
+		} else if (direction.equals("right")) {
+			char boardCord = board[y].charAt(x+1);
+			int i = 1;
+			while (boardCord != 'w') {
+				char nextBoardCord = board[y].charAt(x + i + 1);
+				Player p = getPlayerAt(x + i, y);
+
+				if (p != null) {
+					die(p);
+				}
+
+				if (i == 1) {
+					fields[x + i][y].setGraphic(new ImageView(fireRight));
+				} else if (nextBoardCord != 'w') {
+					fields[x + i][y].setGraphic(new ImageView(fireHorizontal));
+				} else {
+					fields[x + i][y].setGraphic(new ImageView(fireWallEast));
+				}
+
+				i++;
+				boardCord = board[y].charAt(x + i);
+			}
+		} else if (direction.equals("left")) {
+			char boardCord = board[y].charAt(x-1);
+			int i = 1;
+			while (boardCord != 'w') {
+				char nextBoardCord = board[y].charAt(x - i - 1);
+				Player p = getPlayerAt(x - i, y);
+
+				if (p != null) {
+					die(p);
+				}
+
+				if (i == 1) {
+					fields[x - i][y].setGraphic(new ImageView(fireLeft));
+				} else if (nextBoardCord != 'w') {
+					fields[x - i][y].setGraphic(new ImageView(fireHorizontal));
+				} else {
+					fields[x - i][y].setGraphic(new ImageView(fireWallWest));
+				}
+
+				i++;
+				boardCord = board[y].charAt(x - i);
+			}
+		}
+	}
+
+	public void remove(char boardCord, int x, int y, int i) {
+		while (boardCord != 'w') {
+			fields[x][y + i].setGraphic(new ImageView(image_floor));
+			i++;
+			boardCord = board[y + i].charAt(x);
 		}
 	}
 
