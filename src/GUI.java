@@ -388,8 +388,6 @@ public class GUI extends Application {
 	}
 
 	public void respawn(Player player) throws IOException {
-		int x = player.getXpos(),y = player.getYpos();
-		fields[x][y].setGraphic(new ImageView(image_floor));
 		String coords = randomPosition();
 		System.out.println("REspawn kørt");
 		outToServer.writeBytes("Respawn" + " " + player.name + " " + coords + "\n");
@@ -405,6 +403,8 @@ public class GUI extends Application {
 						p = player;
 					}
 				}
+				int x1 = p.getXpos(),y1 = p.getYpos();
+				fields[x1][y1].setGraphic(new ImageView(image_floor));
 				p.setXpos(Integer.parseInt(x));
 				p.setYpos(Integer.parseInt(y));
 				p.setDirection("up");
