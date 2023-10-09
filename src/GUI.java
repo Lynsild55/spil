@@ -33,6 +33,8 @@ public class GUI extends Application {
 	public static Image image_wall;
 	public static Image hero_right,hero_left,hero_up,hero_down;
 
+	public static Image fireDown, fireHorizontal, fireLeft, fireRight, fireUp, fireVertical, fireWallEast, fireWallNorth, fireWallSouth, fireWallWest;
+
 	public static Player me;
 
 	public static List<Player> players = new ArrayList<Player>();
@@ -101,6 +103,17 @@ public class GUI extends Application {
 			hero_up     = new Image(getClass().getResourceAsStream("Image/heroUp.png"),size,size,false,false);
 			hero_down   = new Image(getClass().getResourceAsStream("Image/heroDown.png"),size,size,false,false);
 
+			fireDown = new Image(getClass().getResourceAsStream("Image/fireDown.png"), size, size, false, false);
+			fireHorizontal = new Image(getClass().getResourceAsStream("Image/fireHorizontal.png"), size, size, false, false);
+			fireLeft = new Image(getClass().getResourceAsStream("Image/fireRight.png"), size, size, false, false);
+			fireUp = new Image(getClass().getResourceAsStream("Image/fireUp.png"), size, size, false, false);
+			fireVertical = new Image(getClass().getResourceAsStream("Image/fireVertical.png"), size, size, false, false);
+			fireWallEast = new Image(getClass().getResourceAsStream("Image/fireWallEast.png"), size, size, false, false);
+			fireWallNorth = new Image(getClass().getResourceAsStream("Image/fireWallNorth.png"), size, size, false, false);
+			fireWallSouth = new Image(getClass().getResourceAsStream("Image/fireWallSouth.png"), size, size, false, false);
+			fireWallWest = new Image(getClass().getResourceAsStream("Image/fireWallWest.png"), size, size, false, false);
+
+
 			fields = new Label[20][20];
 			for (int j=0; j<20; j++) {
 				for (int i=0; i<20; i++) {
@@ -138,6 +151,7 @@ public class GUI extends Application {
 				case DOWN:  sendBesked("DOWN");  break;
 				case LEFT:  sendBesked("LEFT");  break;
 				case RIGHT: sendBesked("RIGHT"); break;
+				case SPACE: shoot(me); break;
 				default: break;
 				}
 			});
@@ -191,6 +205,39 @@ public class GUI extends Application {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void shoot(Player player) {
+		int x = player.getXpos(),y = player.getYpos();
+		String direction = player.direction;
+
+		if (direction.equals("up")) {
+			char boardCord = board[y-1].charAt(x);
+			int i = 1;
+			while (boardCord != 'w') {
+				char nextBoardCord = board[y-i-1].charAt(x);
+				Player p = getPlayerAt(x,y-i);
+
+				if (p != null) {
+					die(p);
+				}
+
+				if (i == 1) {
+					fields[x][y-i].setGraphic(new ImageView(fireUp));
+				} else if (nextBoardCord != 'w') {
+					fields[x][y-i].setGraphic(new ImageView(fireVertical));
+				} else {
+					fields[x][y-i].setGraphic(new ImageView(fireWallNorth));
+				}
+
+				i++;
+				boardCord = board[y-i].charAt(x);
+			}
+		}
+	}
+
+	public void die(Player player) {
+		// TODO: 09/10/2023
 	}
 
 	public void playerMoved(int delta_x, int delta_y, String direction, Player player) {
