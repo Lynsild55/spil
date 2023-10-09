@@ -176,7 +176,9 @@ public class GUI extends Application {
 						while (true) {
 							String[] tekst = input.readLine().split(" ");
 							System.out.println(Arrays.toString(tekst));
-							if (tekst.length > 2) {
+							if (tekst[0].equals("Respawn")) {
+								respawnServer(tekst[1],tekst[2],tekst[3]);
+							} else if (tekst.length > 2) {
 								addSpiller(tekst[0], tekst[1], tekst[2]);
 							} else if (tekst.length > 1){
 								moveFromServer(tekst[0], tekst[1]);
@@ -216,7 +218,7 @@ public class GUI extends Application {
 		}
 	}
 
-	public void shoot(Player player) throws InterruptedException {
+	public void shoot(Player player) throws InterruptedException, IOException {
 		int x = player.getXpos(),y = player.getYpos();
 		String direction = player.direction;
 
@@ -380,19 +382,34 @@ public class GUI extends Application {
 		});
 	}
 
-	public void die(Player player) {
+	public void die(Player player) throws IOException {
 		player.addPoints(-100);
 		respawn(player);
 	}
 
-	public void respawn(Player player) {
+	public void respawn(Player player) throws IOException {
 		int x = player.getXpos(),y = player.getYpos();
 		fields[x][y].setGraphic(new ImageView(image_floor));
-		String[] coords = randomPosition().split(" ");
-		player.setXpos(Integer.parseInt(coords[0]));
-		player.setYpos(Integer.parseInt(coords[1]));
-		player.setDirection("up");
-		fields[Integer.parseInt(coords[0])][Integer.parseInt(coords[1])].setGraphic(new ImageView(hero_up));
+		String coords = randomPosition();
+		outToServer.writeBytes("Respawn" + " " + me.name + " " + coords + "\n");
+	}
+
+	public void respawnServer(String navn, String x, String y) {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				Player p = me;
+				for (Player player : players) {
+					if (player.name.equals(navn)) {
+						p = player;
+					}
+				}
+				p.setXpos(Integer.parseInt(x));
+				p.setYpos(Integer.parseInt(y));
+				p.setDirection("up");
+				fields[Integer.parseInt(x)][Integer.parseInt(y)].setGraphic(new ImageView(hero_up));
+			}
+		});
 	}
 
 	public void playerMoved(int delta_x, int delta_y, String direction, Player player) {
@@ -559,7 +576,7 @@ public class GUI extends Application {
 				}
 				try {
 					shoot(p);
-				} catch (InterruptedException e) {
+				} catch (InterruptedException | IOException e) {
 					throw new RuntimeException(e);
 				}
 			}
