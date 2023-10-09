@@ -364,7 +364,10 @@ public class GUI extends Application {
 				int xPos_r = x;
 				int yPos_r = y;
 				while (board[yPos_r].charAt(xPos_r) != 'w') {
-					fields[xPos_r][yPos_r].setGraphic(new ImageView(image_floor));
+					Player p = getPlayerAt(x, y);
+					if (p == null) {
+						fields[xPos_r][yPos_r].setGraphic(new ImageView(image_floor));
+					}
 					if (direction.equals("up")) {
 						yPos_r--;
 
