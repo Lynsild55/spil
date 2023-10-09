@@ -328,7 +328,18 @@ public class GUI extends Application {
 	}
 
 	public void die(Player player) {
-		// TODO: 09/10/2023
+		player.addPoints(-100);
+		respawn(player);
+	}
+
+	public void respawn(Player player) {
+		int x = player.getXpos(),y = player.getYpos();
+		fields[x][y].setGraphic(new ImageView(image_floor));
+		String[] coords = randomPosition().split(" ");
+		player.setXpos(Integer.parseInt(coords[0]));
+		player.setYpos(Integer.parseInt(coords[1]));
+		player.setDirection("up");
+		fields[Integer.parseInt(coords[0])][Integer.parseInt(coords[1])].setGraphic(new ImageView(hero_up));
 	}
 
 	public void playerMoved(int delta_x, int delta_y, String direction, Player player) {
