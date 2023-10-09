@@ -229,7 +229,7 @@ public class GUI extends Application {
 				char nextBoardCord = board[y-i-1].charAt(x);
 				Player p = getPlayerAt(x,y-i);
 
-				if (p != null) {
+				if (p != null && player.equals(me)) {
 					die(p);
 				}
 
@@ -262,7 +262,7 @@ public class GUI extends Application {
 				char nextBoardCord = board[y + i + 1].charAt(x);
 				Player p = getPlayerAt(x, y + i);
 
-				if (p != null) {
+				if (p != null && player.equals(me)) {
 					die(p);
 				}
 
@@ -296,7 +296,7 @@ public class GUI extends Application {
 				char nextBoardCord = board[y].charAt(x + i + 1);
 				Player p = getPlayerAt(x + i, y);
 
-				if (p != null) {
+				if (p != null && player.equals(me)) {
 					die(p);
 				}
 
@@ -329,7 +329,7 @@ public class GUI extends Application {
 				char nextBoardCord = board[y].charAt(x - i - 1);
 				Player p = getPlayerAt(x - i, y);
 
-				if (p != null) {
+				if (p != null && player.equals(me)) {
 					die(p);
 				}
 
@@ -391,7 +391,8 @@ public class GUI extends Application {
 		int x = player.getXpos(),y = player.getYpos();
 		fields[x][y].setGraphic(new ImageView(image_floor));
 		String coords = randomPosition();
-		outToServer.writeBytes("Respawn" + " " + me.name + " " + coords + "\n");
+		System.out.println("REspawn kørt");
+		outToServer.writeBytes("Respawn" + " " + player.name + " " + coords + "\n");
 	}
 
 	public void respawnServer(String navn, String x, String y) {
