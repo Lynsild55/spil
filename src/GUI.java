@@ -364,7 +364,7 @@ public class GUI extends Application {
 				int xPos_r = x;
 				int yPos_r = y;
 				while (board[yPos_r].charAt(xPos_r) != 'w') {
-					Player p = getPlayerAt(x, y);
+					Player p = getPlayerAt(xPos_r, yPos_r);
 					if (p == null) {
 						fields[xPos_r][yPos_r].setGraphic(new ImageView(image_floor));
 					}
