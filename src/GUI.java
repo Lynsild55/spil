@@ -221,6 +221,7 @@ public class GUI extends Application {
 	public void shoot(Player player) throws InterruptedException, IOException {
 		int x = player.getXpos(),y = player.getYpos();
 		String direction = player.direction;
+		int length = 0;
 
 		if (direction.equals("up")) {
 			char boardCord = board[y-1].charAt(x);
@@ -353,6 +354,7 @@ public class GUI extends Application {
 				}
 				i++;
 				boardCord = board[y].charAt(x - i);
+				length++;
 			}
 		}
 	}
@@ -386,7 +388,6 @@ public class GUI extends Application {
 	}
 
 	public void die(Player player) throws IOException {
-		player.addPoints(-100);
 		respawn(player);
 	}
 
@@ -411,6 +412,7 @@ public class GUI extends Application {
 				p.setXpos(Integer.parseInt(x));
 				p.setYpos(Integer.parseInt(y));
 				p.setDirection("up");
+				p.addPoints(-100);
 				fields[Integer.parseInt(x)][Integer.parseInt(y)].setGraphic(new ImageView(hero_up));
 			}
 		});
